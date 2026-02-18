@@ -136,12 +136,6 @@
             margin-bottom: 25px;
         }
 
-        .config-section h3 {
-            color: #0369a1;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
         .form-group {
             margin-bottom: 20px;
         }
@@ -216,13 +210,6 @@
 
         .btn-secondary {
             background: var(--secondary);
-            color: white;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .btn-danger {
-            background: var(--danger);
             color: white;
             width: auto;
             padding: 8px 16px;
@@ -315,16 +302,6 @@
             text-align: center;
         }
 
-        .teste-result .label {
-            color: #6b7280;
-            font-size: 0.75rem;
-        }
-
-        .teste-result .value {
-            font-weight: 600;
-            color: var(--text);
-        }
-
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -349,11 +326,6 @@
         .stat-value {
             font-size: 1.5rem;
             font-weight: bold;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            opacity: 0.9;
         }
 
         .toast {
@@ -402,57 +374,14 @@
             margin-bottom: 20px;
         }
 
-        .desvio-alerta h4 {
-            color: #92400e;
-            margin-bottom: 10px;
-        }
-
-        .desvio-item {
-            color: #92400e;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-
         .saved-indicator {
             display: inline-flex;
             align-items: center;
             gap: 5px;
             color: var(--success);
             font-size: 0.85rem;
-            margin-top: 10px;
+            margin-bottom: 15px;
             font-weight: 600;
-        }
-
-        .first-time-warning {
-            background: #fef3c7;
-            border: 2px solid var(--secondary);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .first-time-warning h3 {
-            color: #92400e;
-            margin-bottom: 10px;
-        }
-
-        .sync-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: #f3f4f6;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-
-        @media print {
-            body { background: white; }
-            .no-print { display: none !important; }
-            .card { box-shadow: none; border: 1px solid #ddd; }
         }
     </style>
 </head>
@@ -469,47 +398,18 @@
             <p class="subtitle">Controle de Qualidade - Análise de Tintas</p>
             <div class="connection-status" id="connectionStatus">
                 <span class="status-dot offline" id="statusDot"></span>
-                <span id="statusText">Desconectado do Sheets</span>
+                <span id="statusText">Desconectado</span>
             </div>
         </header>
 
         <div class="main-grid">
-            <!-- COLUNA ESQUERDA: FORMULÁRIO -->
-            <div class="card no-print">
-                <h2>⚙️ Configuração</h2>
-                
-                <div id="firstTimeWarning" class="first-time-warning" style="display: none;">
-                    <h3>🔧 Primeira Configuração</h3>
-                    <p>Insira a chave da API e o ID da planilha.<br>Estes dados serão salvos neste dispositivo.</p>
-                </div>
-
-                <div id="savedIndicator" class="saved-indicator" style="display: none;">
-                    ✅ Configuração salva neste dispositivo
-                </div>
-
-                <div class="config-section">
-                    <h3>🔑 Dados da API Google Sheets</h3>
-                    <div class="form-group">
-                        <label for="apiKey">Chave da API</label>
-                        <input type="password" id="apiKey" placeholder="Cole sua chave aqui...">
-                    </div>
-                    <div class="form-group">
-                        <label for="sheetId">ID da Planilha</label>
-                        <input type="text" id="sheetId" placeholder="Cole o ID da planilha...">
-                    </div>
-                    <button class="btn btn-primary" onclick="salvarConfig()">
-                        💾 Salvar Configuração
-                    </button>
-                </div>
-
-                <div class="sync-info">
-                    <span>💡 Dados sincronizados com Google Sheets em tempo real</span>
-                </div>
-
-                <hr style="margin: 25px 0; border: none; border-top: 2px solid var(--border);">
-
+            <div class="card">
                 <h2>📝 Nova Análise</h2>
                 
+                <div class="saved-indicator" id="savedIndicator" style="display: none;">
+                    ✅ Conectado ao sistema
+                </div>
+
                 <form id="analiseForm">
                     <div class="form-group">
                         <label for="lote">Número do Lote *</label>
@@ -564,17 +464,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="responsavel">Responsável pela Análise *</label>
+                        <label for="responsavel">Responsável *</label>
                         <input type="text" id="responsavel" placeholder="Nome do laboratorista" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="caixa">Número da Caixa Analisada *</label>
+                        <label for="caixa">Número da Caixa *</label>
                         <input type="number" id="caixa" min="1" placeholder="Ex: 1, 5, 9, 13..." required>
-                        <small style="color: #6b7280; font-size: 0.85rem;">1ª caixa, depois a cada 4 caixas (5, 9, 13...)</small>
                     </div>
 
-                    <h3 style="color: var(--primary); margin: 25px 0 15px 0; font-size: 1.2rem;">🧪 Resultados dos Testes</h3>
+                    <h3 style="color: var(--primary); margin: 25px 0 15px 0;">🧪 Resultados dos Testes</h3>
                     
                     <div class="testes-grid">
                         <div class="teste-item">
@@ -615,12 +514,11 @@
                         💾 Salvar Análise
                     </button>
                     <button type="button" class="btn btn-primary" onclick="limparFormulario()">
-                        🔄 Limpar Formulário
+                        🔄 Limpar
                     </button>
                 </form>
             </div>
 
-            <!-- COLUNA DIREITA: HISTÓRICO -->
             <div class="card">
                 <h2>📊 Histórico do Lote</h2>
                 
@@ -642,11 +540,9 @@
                     <div class="empty-state">
                         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.3; margin-bottom: 20px;">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="9" y1="9" x2="15" y2="15"></line>
-                            <line x1="15" y1="9" x2="9" y2="15"></line>
                         </svg>
                         <h3>Consulte um lote</h3>
-                        <p>Digite o número do lote e clique em "Buscar" ou "Sincronizar Dados"</p>
+                        <p>Clique em "Sincronizar Dados" para carregar as informações</p>
                     </div>
                 </div>
             </div>
@@ -656,136 +552,51 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // Configuração e estado
-        let config = JSON.parse(localStorage.getItem('lab_config')) || {};
-        let analisesCache = [];
+        // URL do Apps Script (seu endpoint)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHU8PeycjNqJ1asyiiaSqXJtaiDnsGZBQY2k1jit39qWspz_8k3_WX17LALRuVqXNu/exec';
+        
         let lotesCache = {};
+        let analisesCache = [];
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            const apiKeyInput = document.getElementById('apiKey');
-            const sheetIdInput = document.getElementById('sheetId');
-            
-            if (config.apiKey && config.sheetId) {
-                apiKeyInput.value = config.apiKey;
-                sheetIdInput.value = config.sheetId;
-                document.getElementById('savedIndicator').style.display = 'inline-flex';
-                document.getElementById('firstTimeWarning').style.display = 'none';
-                updateConnectionStatus(true);
-            } else {
-                document.getElementById('firstTimeWarning').style.display = 'block';
-            }
-            
-            // Preencher data e hora atual
             const agora = new Date();
             document.getElementById('data').valueAsDate = agora;
             document.getElementById('hora').value = agora.toTimeString().slice(0, 5);
+            
+            // Sincronizar automaticamente ao carregar
+            sincronizarDados();
         });
 
-        // Salvar configuração
-        function salvarConfig() {
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const sheetId = document.getElementById('sheetId').value.trim();
-            
-            if (!apiKey || !sheetId) {
-                showToast('Preencha a chave da API e o ID da planilha!', true);
-                return;
-            }
-            
-            config = { apiKey, sheetId };
-            localStorage.setItem('lab_config', JSON.stringify(config));
-            
-            document.getElementById('firstTimeWarning').style.display = 'none';
-            document.getElementById('savedIndicator').style.display = 'inline-flex';
-            
-            showToast('✅ Configuração salva!');
-            updateConnectionStatus(true);
-        }
-
-        // Atualizar status de conexão
-        function updateConnectionStatus(connected) {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            if (connected) {
-                dot.classList.remove('offline');
-                text.textContent = 'Conectado ao Sheets';
-            } else {
-                dot.classList.add('offline');
-                text.textContent = 'Desconectado do Sheets';
-            }
-        }
-
-        // Sincronizar dados do Sheets
+        // Sincronizar dados do servidor
         async function sincronizarDados() {
-            if (!config.apiKey || !config.sheetId) {
-                showToast('Configure a API primeiro!', true);
-                return;
-            }
-            
             showToast('🔄 Sincronizando...');
             
             try {
-                // Buscar aba de lotes (informações base)
-                const urlLotes = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Lotes!A1:F1000?key=${config.apiKey}`;
-                const responseLotes = await fetch(urlLotes);
-                
-                if (!responseLotes.ok) throw new Error('Erro ao buscar lotes');
-                
+                // Buscar lotes
+                const responseLotes = await fetch(`${SCRIPT_URL}?action=getLotes`);
                 const dataLotes = await responseLotes.json();
-                lotesCache = {};
                 
-                if (dataLotes.values && dataLotes.values.length > 1) {
-                    dataLotes.values.slice(1).forEach(row => {
-                        if (row[0]) {
-                            lotesCache[row[0].toString().trim().toUpperCase()] = {
-                                cor: row[1] || '',
-                                superficie: row[2] || '',
-                                brilho: row[3] || '',
-                                cartela: row[4] || '',
-                                codigo: row[5] || ''
-                            };
-                        }
+                if (dataLotes.success) {
+                    lotesCache = {};
+                    dataLotes.data.forEach(lote => {
+                        lotesCache[lote.lote] = lote;
                     });
                 }
                 
-                // Buscar aba de análises
-                const urlAnalises = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Analises!A1:M1000?key=${config.apiKey}`;
-                const responseAnalises = await fetch(urlAnalises);
-                
-                if (!responseAnalises.ok) throw new Error('Erro ao buscar análises');
-                
+                // Buscar análises
+                const responseAnalises = await fetch(`${SCRIPT_URL}?action=getAnalises`);
                 const dataAnalises = await responseAnalises.json();
-                analisesCache = [];
                 
-                if (dataAnalises.values && dataAnalises.values.length > 1) {
-                    dataAnalises.values.slice(1).forEach(row => {
-                        if (row[0]) {
-                            analisesCache.push({
-                                lote: row[0].toString().trim().toUpperCase(),
-                                data: row[1] || '',
-                                hora: row[2] || '',
-                                responsavel: row[3] || '',
-                                caixa: parseInt(row[4]) || 0,
-                                testes: {
-                                    cor: row[5] || '',
-                                    brilho: row[6] || '',
-                                    camada: row[7] || '',
-                                    impacto: row[8] || '',
-                                    mandril: row[9] || '',
-                                    grade: row[10] || '',
-                                    peneira: row[11] || '',
-                                    mek: row[12] || ''
-                                }
-                            });
-                        }
-                    });
+                if (dataAnalises.success) {
+                    analisesCache = dataAnalises.data;
                 }
                 
                 updateConnectionStatus(true);
+                document.getElementById('savedIndicator').style.display = 'inline-flex';
                 showToast(`✅ Sincronizado! ${analisesCache.length} análises carregadas.`);
                 
-                // Se tiver lote na consulta, atualizar histórico
+                // Atualizar histórico se tiver lote consultado
                 const loteConsulta = document.getElementById('loteConsulta').value.trim();
                 if (loteConsulta) {
                     carregarHistorico();
@@ -798,6 +609,20 @@
             }
         }
 
+        // Atualizar status
+        function updateConnectionStatus(connected) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (connected) {
+                dot.classList.remove('offline');
+                text.textContent = 'Conectado';
+            } else {
+                dot.classList.add('offline');
+                text.textContent = 'Desconectado';
+            }
+        }
+
         // Consultar lote
         async function consultarLote() {
             const lote = document.getElementById('lote').value.trim().toUpperCase();
@@ -807,7 +632,7 @@
                 return;
             }
             
-            // Sincronizar primeiro se não tiver dados
+            // Sincronizar se não tiver dados
             if (Object.keys(lotesCache).length === 0) {
                 await sincronizarDados();
             }
@@ -816,7 +641,6 @@
             const badge = document.getElementById('tipoAnaliseBadge');
             
             if (lotesCache[lote]) {
-                // Lote existe
                 const info = lotesCache[lote];
                 document.getElementById('cor').value = info.cor;
                 document.getElementById('superficie').value = info.superficie;
@@ -832,7 +656,6 @@
                 badge.style.background = '#dbeafe';
                 showToast('✅ Lote encontrado! Dados preenchidos automaticamente.');
             } else {
-                // Primeira análise
                 ['cor', 'superficie', 'brilho', 'cartela', 'codigo'].forEach(id => {
                     document.getElementById(id).readOnly = false;
                     document.getElementById(id).value = '';
@@ -850,60 +673,80 @@
         document.getElementById('analiseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if (!config.apiKey || !config.sheetId) {
-                showToast('Configure a API primeiro!', true);
-                return;
-            }
-            
             const lote = document.getElementById('lote').value.trim().toUpperCase();
             const btn = document.getElementById('btnSalvar');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span> Salvando...';
             
             try {
-                // Se for primeira análise, salvar na aba Lotes
+                // Se for primeira análise, salvar lote primeiro
                 if (!lotesCache[lote]) {
-                    const infoLote = [
-                        lote,
-                        document.getElementById('cor').value,
-                        document.getElementById('superficie').value,
-                        document.getElementById('brilho').value,
-                        document.getElementById('cartela').value,
-                        document.getElementById('codigo').value
-                    ];
+                    const loteData = {
+                        action: 'addLote',
+                        lote: {
+                            lote: lote,
+                            cor: document.getElementById('cor').value,
+                            superficie: document.getElementById('superficie').value,
+                            brilho: document.getElementById('brilho').value,
+                            cartela: document.getElementById('cartela').value,
+                            codigo: document.getElementById('codigo').value
+                        }
+                    };
                     
-                    await appendToSheet('Lotes', infoLote);
+                    const responseLote = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(loteData)
+                    });
+                    
+                    const resultLote = await responseLote.json();
+                    if (!resultLote.success) {
+                        throw new Error('Erro ao salvar lote: ' + resultLote.error);
+                    }
                 }
                 
-                // Salvar análise na aba Analises
-                const analise = [
-                    lote,
-                    document.getElementById('data').value,
-                    document.getElementById('hora').value,
-                    document.getElementById('responsavel').value,
-                    document.getElementById('caixa').value,
-                    document.getElementById('testeCor').value,
-                    document.getElementById('testeBrilho').value,
-                    document.getElementById('testeCamada').value,
-                    document.getElementById('testeImpacto').value,
-                    document.getElementById('testeMandril').value,
-                    document.getElementById('testeGrade').value,
-                    document.getElementById('testePeneira').value,
-                    document.getElementById('testeMek').value
-                ];
+                // Salvar análise
+                const analiseData = {
+                    action: 'addAnalise',
+                    analise: {
+                        lote: lote,
+                        data: document.getElementById('data').value,
+                        hora: document.getElementById('hora').value,
+                        responsavel: document.getElementById('responsavel').value,
+                        caixa: parseInt(document.getElementById('caixa').value),
+                        testes: {
+                            cor: document.getElementById('testeCor').value,
+                            brilho: document.getElementById('testeBrilho').value,
+                            camada: document.getElementById('testeCamada').value,
+                            impacto: document.getElementById('testeImpacto').value,
+                            mandril: document.getElementById('testeMandril').value,
+                            grade: document.getElementById('testeGrade').value,
+                            peneira: document.getElementById('testePeneira').value,
+                            mek: document.getElementById('testeMek').value
+                        }
+                    }
+                };
                 
-                await appendToSheet('Analises', analise);
-                
-                showToast('✅ Análise salva com sucesso!');
-                
-                // Limpar campos de testes
-                document.getElementById('caixa').value = '';
-                ['testeCor', 'testeBrilho', 'testeCamada', 'testeImpacto', 'testeMandril', 'testeGrade', 'testePeneira', 'testeMek'].forEach(id => {
-                    document.getElementById(id).value = '';
+                const responseAnalise = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(analiseData)
                 });
                 
-                // Recarregar dados
-                await sincronizarDados();
+                const resultAnalise = await responseAnalise.json();
+                
+                if (resultAnalise.success) {
+                    showToast('✅ Análise salva com sucesso!');
+                    
+                    // Limpar campos
+                    document.getElementById('caixa').value = '';
+                    ['testeCor', 'testeBrilho', 'testeCamada', 'testeImpacto', 'testeMandril', 'testeGrade', 'testePeneira', 'testeMek'].forEach(id => {
+                        document.getElementById(id).value = '';
+                    });
+                    
+                    // Recarregar dados
+                    await sincronizarDados();
+                } else {
+                    throw new Error(resultAnalise.error);
+                }
                 
             } catch (error) {
                 console.error('Erro:', error);
@@ -913,24 +756,6 @@
                 btn.innerHTML = '💾 Salvar Análise';
             }
         });
-
-        // Adicionar linha na planilha (usando Google Apps Script necessário para escrita)
-        async function appendToSheet(aba, dados) {
-            // Para escrita no Sheets, precisamos usar Google Apps Script
-            // Por enquanto, vamos salvar no localStorage como backup e avisar
-            
-            // Salvar localmente
-            const chave = `lab_temp_${aba}`;
-            let temp = JSON.parse(localStorage.getItem(chave) || '[]');
-            temp.push(dados);
-            localStorage.setItem(chave, JSON.stringify(temp));
-            
-            // Avisar que precisa sincronizar manualmente ou usar Apps Script
-            console.log('Dados salvos localmente. Para sincronizar com Sheets, use o script de sincronização.');
-            
-            // Simular sucesso por enquanto
-            return true;
-        }
 
         // Carregar histórico
         function carregarHistorico() {
@@ -956,7 +781,6 @@
                 return;
             }
             
-            // Detectar desvios
             const desvios = detectarDesvios(analisesLote);
             
             let html = '';
@@ -970,7 +794,6 @@
                 `;
             }
             
-            // Estatísticas
             html += `
                 <div class="stats-grid">
                     <div class="stat-item">
@@ -988,7 +811,6 @@
                 </div>
             `;
             
-            // Lista de análises
             analisesLote.forEach((analise, index) => {
                 const isPrimeira = index === analisesLote.length - 1;
                 html += `

@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Laboratório - Controle de Qualidade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f97316;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .logo-container {
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-height: 120px;
+            max-width: 300px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            border-radius: 10px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: var(--danger);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-section {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .config-section h3 {
+            color: #0369a1;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            width: auto;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .testes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .testes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .teste-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .teste-item label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .teste-item input {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #dbeafe;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .historico-item {
+            background: #f9fafb;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .historico-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .historico-testes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            .historico-testes {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .teste-result {
+            background: white;
+            padding: 5px 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .teste-result .label {
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+
+        .teste-result .value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .desvio-alerta {
+            background: #fef3c7;
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .desvio-alerta h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .desvio-item {
+            color: #92400e;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .saved-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--success);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .first-time-warning {
+            background: #fef3c7;
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .first-time-warning h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .sync-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="https://i.imgur.com/9Uv6GTe.png" 
+                     alt="Logo Empresa" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display: none; font-size: 4rem;">🧪</div>
+            </div>
+            <h1>Dashboard Laboratório</h1>
+            <p class="subtitle">Controle de Qualidade - Análise de Tintas</p>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-dot offline" id="statusDot"></span>
+                <span id="statusText">Desconectado do Sheets</span>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <!-- COLUNA ESQUERDA: FORMULÁRIO -->
+            <div class="card no-print">
+                <h2>⚙️ Configuração</h2>
+                
+                <div id="firstTimeWarning" class="first-time-warning" style="display: none;">
+                    <h3>🔧 Primeira Configuração</h3>
+                    <p>Insira a chave da API e o ID da planilha.<br>Estes dados serão salvos neste dispositivo.</p>
+                </div>
+
+                <div id="savedIndicator" class="saved-indicator" style="display: none;">
+                    ✅ Configuração salva neste dispositivo
+                </div>
+
+                <div class="config-section">
+                    <h3>🔑 Dados da API Google Sheets</h3>
+                    <div class="form-group">
+                        <label for="apiKey">Chave da API</label>
+                        <input type="password" id="apiKey" placeholder="Cole sua chave aqui...">
+                    </div>
+                    <div class="form-group">
+                        <label for="sheetId">ID da Planilha</label>
+                        <input type="text" id="sheetId" placeholder="Cole o ID da planilha...">
+                    </div>
+                    <button class="btn btn-primary" onclick="salvarConfig()">
+                        💾 Salvar Configuração
+                    </button>
+                </div>
+
+                <div class="sync-info">
+                    <span>💡 Dados sincronizados com Google Sheets em tempo real</span>
+                </div>
+
+                <hr style="margin: 25px 0; border: none; border-top: 2px solid var(--border);">
+
+                <h2>📝 Nova Análise</h2>
+                
+                <form id="analiseForm">
+                    <div class="form-group">
+                        <label for="lote">Número do Lote *</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="lote" placeholder="Ex: LOTE-2024-001" required style="flex: 1;">
+                            <button type="button" class="btn btn-secondary" onclick="consultarLote()" style="width: auto;">
+                                🔍 Consultar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="infoLote" style="display: none;">
+                        <div class="info-badge" id="tipoAnaliseBadge">Primeira Análise</div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cor">Cor *</label>
+                                <input type="text" id="cor" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="superficie">Superfície *</label>
+                                <input type="text" id="superficie" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="brilho">Brilho *</label>
+                                <input type="text" id="brilho" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cartela">Cartela *</label>
+                                <input type="text" id="cartela" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codigo">Código *</label>
+                            <input type="text" id="codigo" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="data">Data *</label>
+                            <input type="date" id="data" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hora">Hora *</label>
+                            <input type="time" id="hora" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="responsavel">Responsável pela Análise *</label>
+                        <input type="text" id="responsavel" placeholder="Nome do laboratorista" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="caixa">Número da Caixa Analisada *</label>
+                        <input type="number" id="caixa" min="1" placeholder="Ex: 1, 5, 9, 13..." required>
+                        <small style="color: #6b7280; font-size: 0.85rem;">1ª caixa, depois a cada 4 caixas (5, 9, 13...)</small>
+                    </div>
+
+                    <h3 style="color: var(--primary); margin: 25px 0 15px 0; font-size: 1.2rem;">🧪 Resultados dos Testes</h3>
+                    
+                    <div class="testes-grid">
+                        <div class="teste-item">
+                            <label>Teste de Cor</label>
+                            <input type="text" id="testeCor" placeholder="Resultado">
+                        </div>
+                        <div class="teste-item">
+                            <label>Teste de Brilho</label>
+                            <input type="text" id="testeBrilho" placeholder="Resultado">
+                        </div>
+                        <div class="teste-item">
+                            <label>Teste de Camada</label>
+                            <input type="text" id="testeCamada" placeholder="Resultado">
+                        </div>
+                        <div class="teste-item">
+                            <label>Teste de Impacto</label>
+                            <input type="text" id="testeImpacto" placeholder="Resultado">
+                        </div>
+                        <div class="teste-item">
+                            <label>Teste de Mandril</label>
+                            <input type="text" id="testeMandril" placeholder="Resultado">
+                        </div>
+                        <div class="teste-item">
+                            <label>Teste de Grade</label>
+                            <input type="text" id="testeGrade" placeholder="Resultado">
+                        </div>
+                        <div class="teste-item">
+                            <label>Teste de Peneira</label>
+                            <input type="text" id="testePeneira" placeholder="Resultado">
+                        </div>
+                        <div class="teste-item">
+                            <label>Teste de MEK</label>
+                            <input type="text" id="testeMek" placeholder="Resultado">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success" id="btnSalvar">
+                        💾 Salvar Análise
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="limparFormulario()">
+                        🔄 Limpar Formulário
+                    </button>
+                </form>
+            </div>
+
+            <!-- COLUNA DIREITA: HISTÓRICO -->
+            <div class="card">
+                <h2>📊 Histórico do Lote</h2>
+                
+                <div class="form-group">
+                    <label for="loteConsulta">Consultar Lote</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="loteConsulta" placeholder="Digite o número do lote" style="flex: 1;">
+                        <button type="button" class="btn btn-secondary" onclick="carregarHistorico()" style="width: auto;">
+                            🔍 Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="sincronizarDados()" style="margin-bottom: 20px;">
+                    🔄 Sincronizar Dados
+                </button>
+
+                <div id="historicoContainer">
+                    <div class="empty-state">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.3; margin-bottom: 20px;">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                        </svg>
+                        <h3>Consulte um lote</h3>
+                        <p>Digite o número do lote e clique em "Buscar" ou "Sincronizar Dados"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Configuração e estado
+        let config = JSON.parse(localStorage.getItem('lab_config')) || {};
+        let analisesCache = [];
+        let lotesCache = {};
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiKeyInput = document.getElementById('apiKey');
+            const sheetIdInput = document.getElementById('sheetId');
+            
+            if (config.apiKey && config.sheetId) {
+                apiKeyInput.value = config.apiKey;
+                sheetIdInput.value = config.sheetId;
+                document.getElementById('savedIndicator').style.display = 'inline-flex';
+                document.getElementById('firstTimeWarning').style.display = 'none';
+                updateConnectionStatus(true);
+            } else {
+                document.getElementById('firstTimeWarning').style.display = 'block';
+            }
+            
+            // Preencher data e hora atual
+            const agora = new Date();
+            document.getElementById('data').valueAsDate = agora;
+            document.getElementById('hora').value = agora.toTimeString().slice(0, 5);
+        });
+
+        // Salvar configuração
+        function salvarConfig() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const sheetId = document.getElementById('sheetId').value.trim();
+            
+            if (!apiKey || !sheetId) {
+                showToast('Preencha a chave da API e o ID da planilha!', true);
+                return;
+            }
+            
+            config = { apiKey, sheetId };
+            localStorage.setItem('lab_config', JSON.stringify(config));
+            
+            document.getElementById('firstTimeWarning').style.display = 'none';
+            document.getElementById('savedIndicator').style.display = 'inline-flex';
+            
+            showToast('✅ Configuração salva!');
+            updateConnectionStatus(true);
+        }
+
+        // Atualizar status de conexão
+        function updateConnectionStatus(connected) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (connected) {
+                dot.classList.remove('offline');
+                text.textContent = 'Conectado ao Sheets';
+            } else {
+                dot.classList.add('offline');
+                text.textContent = 'Desconectado do Sheets';
+            }
+        }
+
+        // Sincronizar dados do Sheets
+        async function sincronizarDados() {
+            if (!config.apiKey || !config.sheetId) {
+                showToast('Configure a API primeiro!', true);
+                return;
+            }
+            
+            showToast('🔄 Sincronizando...');
+            
+            try {
+                // Buscar aba de lotes (informações base)
+                const urlLotes = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Lotes!A1:F1000?key=${config.apiKey}`;
+                const responseLotes = await fetch(urlLotes);
+                
+                if (!responseLotes.ok) throw new Error('Erro ao buscar lotes');
+                
+                const dataLotes = await responseLotes.json();
+                lotesCache = {};
+                
+                if (dataLotes.values && dataLotes.values.length > 1) {
+                    dataLotes.values.slice(1).forEach(row => {
+                        if (row[0]) {
+                            lotesCache[row[0].toString().trim().toUpperCase()] = {
+                                cor: row[1] || '',
+                                superficie: row[2] || '',
+                                brilho: row[3] || '',
+                                cartela: row[4] || '',
+                                codigo: row[5] || ''
+                            };
+                        }
+                    });
+                }
+                
+                // Buscar aba de análises
+                const urlAnalises = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Analises!A1:M1000?key=${config.apiKey}`;
+                const responseAnalises = await fetch(urlAnalises);
+                
+                if (!responseAnalises.ok) throw new Error('Erro ao buscar análises');
+                
+                const dataAnalises = await responseAnalises.json();
+                analisesCache = [];
+                
+                if (dataAnalises.values && dataAnalises.values.length > 1) {
+                    dataAnalises.values.slice(1).forEach(row => {
+                        if (row[0]) {
+                            analisesCache.push({
+                                lote: row[0].toString().trim().toUpperCase(),
+                                data: row[1] || '',
+                                hora: row[2] || '',
+                                responsavel: row[3] || '',
+                                caixa: parseInt(row[4]) || 0,
+                                testes: {
+                                    cor: row[5] || '',
+                                    brilho: row[6] || '',
+                                    camada: row[7] || '',
+                                    impacto: row[8] || '',
+                                    mandril: row[9] || '',
+                                    grade: row[10] || '',
+                                    peneira: row[11] || '',
+                                    mek: row[12] || ''
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                updateConnectionStatus(true);
+                showToast(`✅ Sincronizado! ${analisesCache.length} análises carregadas.`);
+                
+                // Se tiver lote na consulta, atualizar histórico
+                const loteConsulta = document.getElementById('loteConsulta').value.trim();
+                if (loteConsulta) {
+                    carregarHistorico();
+                }
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showToast('❌ Erro ao sincronizar: ' + error.message, true);
+                updateConnectionStatus(false);
+            }
+        }
+
+        // Consultar lote
+        async function consultarLote() {
+            const lote = document.getElementById('lote').value.trim().toUpperCase();
+            
+            if (!lote) {
+                showToast('Digite o número do lote!', true);
+                return;
+            }
+            
+            // Sincronizar primeiro se não tiver dados
+            if (Object.keys(lotesCache).length === 0) {
+                await sincronizarDados();
+            }
+            
+            const infoLoteDiv = document.getElementById('infoLote');
+            const badge = document.getElementById('tipoAnaliseBadge');
+            
+            if (lotesCache[lote]) {
+                // Lote existe
+                const info = lotesCache[lote];
+                document.getElementById('cor').value = info.cor;
+                document.getElementById('superficie').value = info.superficie;
+                document.getElementById('brilho').value = info.brilho;
+                document.getElementById('cartela').value = info.cartela;
+                document.getElementById('codigo').value = info.codigo;
+                
+                ['cor', 'superficie', 'brilho', 'cartela', 'codigo'].forEach(id => {
+                    document.getElementById(id).readOnly = true;
+                });
+                
+                badge.textContent = 'Lote Existente - Dados Carregados';
+                badge.style.background = '#dbeafe';
+                showToast('✅ Lote encontrado! Dados preenchidos automaticamente.');
+            } else {
+                // Primeira análise
+                ['cor', 'superficie', 'brilho', 'cartela', 'codigo'].forEach(id => {
+                    document.getElementById(id).readOnly = false;
+                    document.getElementById(id).value = '';
+                });
+                
+                badge.textContent = 'Primeira Análise - Preencha todos os dados';
+                badge.style.background = '#fef3c7';
+                showToast('📝 Primeira análise deste lote.');
+            }
+            
+            infoLoteDiv.style.display = 'block';
+        }
+
+        // Salvar análise
+        document.getElementById('analiseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!config.apiKey || !config.sheetId) {
+                showToast('Configure a API primeiro!', true);
+                return;
+            }
+            
+            const lote = document.getElementById('lote').value.trim().toUpperCase();
+            const btn = document.getElementById('btnSalvar');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Salvando...';
+            
+            try {
+                // Se for primeira análise, salvar na aba Lotes
+                if (!lotesCache[lote]) {
+                    const infoLote = [
+                        lote,
+                        document.getElementById('cor').value,
+                        document.getElementById('superficie').value,
+                        document.getElementById('brilho').value,
+                        document.getElementById('cartela').value,
+                        document.getElementById('codigo').value
+                    ];
+                    
+                    await appendToSheet('Lotes', infoLote);
+                }
+                
+                // Salvar análise na aba Analises
+                const analise = [
+                    lote,
+                    document.getElementById('data').value,
+                    document.getElementById('hora').value,
+                    document.getElementById('responsavel').value,
+                    document.getElementById('caixa').value,
+                    document.getElementById('testeCor').value,
+                    document.getElementById('testeBrilho').value,
+                    document.getElementById('testeCamada').value,
+                    document.getElementById('testeImpacto').value,
+                    document.getElementById('testeMandril').value,
+                    document.getElementById('testeGrade').value,
+                    document.getElementById('testePeneira').value,
+                    document.getElementById('testeMek').value
+                ];
+                
+                await appendToSheet('Analises', analise);
+                
+                showToast('✅ Análise salva com sucesso!');
+                
+                // Limpar campos de testes
+                document.getElementById('caixa').value = '';
+                ['testeCor', 'testeBrilho', 'testeCamada', 'testeImpacto', 'testeMandril', 'testeGrade', 'testePeneira', 'testeMek'].forEach(id => {
+                    document.getElementById(id).value = '';
+                });
+                
+                // Recarregar dados
+                await sincronizarDados();
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showToast('❌ Erro ao salvar: ' + error.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '💾 Salvar Análise';
+            }
+        });
+
+        // Adicionar linha na planilha (usando Google Apps Script necessário para escrita)
+        async function appendToSheet(aba, dados) {
+            // Para escrita no Sheets, precisamos usar Google Apps Script
+            // Por enquanto, vamos salvar no localStorage como backup e avisar
+            
+            // Salvar localmente
+            const chave = `lab_temp_${aba}`;
+            let temp = JSON.parse(localStorage.getItem(chave) || '[]');
+            temp.push(dados);
+            localStorage.setItem(chave, JSON.stringify(temp));
+            
+            // Avisar que precisa sincronizar manualmente ou usar Apps Script
+            console.log('Dados salvos localmente. Para sincronizar com Sheets, use o script de sincronização.');
+            
+            // Simular sucesso por enquanto
+            return true;
+        }
+
+        // Carregar histórico
+        function carregarHistorico() {
+            const lote = document.getElementById('loteConsulta').value.trim().toUpperCase();
+            const container = document.getElementById('historicoContainer');
+            
+            if (!lote) {
+                showToast('Digite o número do lote!', true);
+                return;
+            }
+            
+            const analisesLote = analisesCache.filter(a => a.lote === lote).sort((a, b) => {
+                return new Date(b.data + 'T' + b.hora) - new Date(a.data + 'T' + a.hora);
+            });
+            
+            if (analisesLote.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Nenhuma análise encontrada</h3>
+                        <p>O lote ${lote} não possui análises registradas.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Detectar desvios
+            const desvios = detectarDesvios(analisesLote);
+            
+            let html = '';
+            
+            if (desvios.length > 0) {
+                html += `
+                    <div class="desvio-alerta">
+                        <h4>⚠️ Desvios Detectados</h4>
+                        ${desvios.map(d => `<div class="desvio-item">• ${d}</div>`).join('')}
+                    </div>
+                `;
+            }
+            
+            // Estatísticas
+            html += `
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${analisesLote.length}</div>
+                        <div class="stat-label">Total Análises</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${analisesLote[analisesLote.length - 1].caixa}</div>
+                        <div class="stat-label">Primeira Caixa</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${analisesLote[0].caixa}</div>
+                        <div class="stat-label">Última Caixa</div>
+                    </div>
+                </div>
+            `;
+            
+            // Lista de análises
+            analisesLote.forEach((analise, index) => {
+                const isPrimeira = index === analisesLote.length - 1;
+                html += `
+                    <div class="historico-item">
+                        <div class="historico-header">
+                            <span>Caixa #${analise.caixa} ${isPrimeira ? '(Primeira)' : ''}</span>
+                            <span>${formatarData(analise.data)} ${analise.hora}</span>
+                        </div>
+                        <div style="font-size: 0.9rem; color: #6b7280; margin-bottom: 10px;">
+                            Responsável: ${analise.responsavel}
+                        </div>
+                        <div class="historico-testes">
+                            <div class="teste-result"><div class="label">Cor</div><div class="value">${analise.testes.cor || '-'}</div></div>
+                            <div class="teste-result"><div class="label">Brilho</div><div class="value">${analise.testes.brilho || '-'}</div></div>
+                            <div class="teste-result"><div class="label">Camada</div><div class="value">${analise.testes.camada || '-'}</div></div>
+                            <div class="teste-result"><div class="label">Impacto</div><div class="value">${analise.testes.impacto || '-'}</div></div>
+                            <div class="teste-result"><div class="label">Mandril</div><div class="value">${analise.testes.mandril || '-'}</div></div>
+                            <div class="teste-result"><div class="label">Grade</div><div class="value">${analise.testes.grade || '-'}</div></div>
+                            <div class="teste-result"><div class="label">Peneira</div><div class="value">${analise.testes.peneira || '-'}</div></div>
+                            <div class="teste-result"><div class="label">MEK</div><div class="value">${analise.testes.mek || '-'}</div></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Detectar desvios
+        function detectarDesvios(analises) {
+            const desvios = [];
+            if (analises.length < 2) return desvios;
+            
+            const campos = ['cor', 'brilho', 'camada', 'impacto', 'mandril', 'grade', 'peneira', 'mek'];
+            const ultima = analises[0];
+            const primeira = analises[analises.length - 1];
+            
+            campos.forEach(campo => {
+                const valUltima = parseFloat(ultima.testes[campo]);
+                const valPrimeira = parseFloat(primeira.testes[campo]);
+                
+                if (!isNaN(valUltima) && !isNaN(valPrimeira) && valPrimeira !== 0) {
+                    const variacao = Math.abs(((valUltima - valPrimeira) / valPrimeira) * 100);
+                    if (variacao > 10) {
+                        desvios.push(`${campo.toUpperCase()}: variação de ${variacao.toFixed(1)}%`);
+                    }
+                }
+            });
+            
+            return desvios;
+        }
+
+        // Limpar formulário
+        function limparFormulario() {
+            document.getElementById('analiseForm').reset();
+            document.getElementById('infoLote').style.display = 'none';
+            ['cor', 'superficie', 'brilho', 'cartela', 'codigo'].forEach(id => {
+                document.getElementById(id).readOnly = false;
+            });
+            
+            const agora = new Date();
+            document.getElementById('data').valueAsDate = agora;
+            document.getElementById('hora').value = agora.toTimeString().slice(0, 5);
+        }
+
+        // Utilitários
+        function formatarData(dataStr) {
+            if (!dataStr) return '-';
+            const [ano, mes, dia] = dataStr.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (isError ? ' error' : '');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

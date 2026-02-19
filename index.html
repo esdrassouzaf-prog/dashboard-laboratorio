@@ -138,6 +138,7 @@
 
         .form-group {
             margin-bottom: 20px;
+            position: relative;
         }
 
         label {
@@ -162,6 +163,17 @@
             outline: none;
             border-color: var(--primary-light);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Estilo para input fora da especificação */
+        input.out-of-spec {
+            border-color: var(--danger);
+            background-color: #fef2f2;
+        }
+
+        input.in-spec {
+            border-color: var(--success);
+            background-color: #f0fdf4;
         }
 
         .form-row {
@@ -240,17 +252,27 @@
             padding: 15px;
             border-radius: 12px;
             border: 2px solid var(--border);
+            position: relative;
         }
 
         .teste-item label {
             font-size: 0.85rem;
             color: #6b7280;
             margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .teste-item input {
             font-weight: 600;
             text-align: center;
+        }
+
+        .spec-range {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 500;
         }
 
         .info-badge {
@@ -300,6 +322,11 @@
             padding: 5px 10px;
             border-radius: 8px;
             text-align: center;
+        }
+
+        .teste-result.out-of-spec {
+            background: #fef2f2;
+            border: 1px solid var(--danger);
         }
 
         .empty-state {
@@ -374,6 +401,17 @@
             margin-bottom: 20px;
         }
 
+        .desvio-alerta h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .desvio-item {
+            color: #92400e;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
         .saved-indicator {
             display: inline-flex;
             align-items: center;
@@ -382,6 +420,78 @@
             font-size: 0.85rem;
             margin-bottom: 15px;
             font-weight: 600;
+        }
+
+        /* Dropdown autocomplete */
+        .autocomplete-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .autocomplete-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .autocomplete-item:hover {
+            background: #f3f4f6;
+        }
+
+        .autocomplete-item.selected {
+            background: #dbeafe;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .specs-table {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .specs-table h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .spec-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .spec-row:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .spec-value {
+            color: #6b7280;
         }
     </style>
 </head>
@@ -394,7 +504,7 @@
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <div style="display: none; font-size: 4rem;">🧪</div>
             </div>
-            <h1>Laboratório</h1>
+            <h1>Dashboard Laboratório</h1>
             <p class="subtitle">Controle de Qualidade - Análise de Tintas</p>
             <div class="connection-status" id="connectionStatus">
                 <span class="status-dot offline" id="statusDot"></span>
@@ -427,18 +537,27 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="cor">Cor *</label>
-                                <input type="text" id="cor" required>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="cor" placeholder="Digite para filtrar..." required autocomplete="off">
+                                    <div class="autocomplete-list" id="corList"></div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="superficie">Superfície *</label>
-                                <input type="text" id="superficie" required>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="superficie" placeholder="Digite para filtrar..." required autocomplete="off">
+                                    <div class="autocomplete-list" id="superficieList"></div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="brilho">Brilho *</label>
-                                <input type="text" id="brilho" required>
+                                <div class="autocomplete-container">
+                                    <input type="text" id="brilho" placeholder="Digite para filtrar..." required autocomplete="off">
+                                    <div class="autocomplete-list" id="brilhoList"></div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="cartela">Cartela *</label>
@@ -470,45 +589,71 @@
 
                     <div class="form-group">
                         <label for="caixa">Número da Caixa *</label>
-                        <input type="number" id="caixa" min="1" placeholder="Ex: 1, 5, 9, 13..." required>
+                        <input type="number" id="caixa" min="1" placeholder="Ex: 1, 5, 9, 13..." required inputmode="numeric" pattern="[0-9]*">
                     </div>
 
                     <h3 style="color: var(--primary); margin: 25px 0 15px 0;">🧪 Resultados dos Testes</h3>
                     
                     <div class="testes-grid">
                         <div class="teste-item">
-                            <label>Teste de Cor</label>
-                            <input type="text" id="testeCor" placeholder="Resultado">
+                            <label>
+                                Teste de Cor (Colorímetro)
+                                <span class="spec-range">ΔE ≤ 2,0</span>
+                            </label>
+                            <input type="number" id="testeCor" placeholder="0,00" step="0.01" inputmode="decimal" onblur="validarEspecificacao(this, 'cor')">
                         </div>
                         <div class="teste-item">
-                            <label>Teste de Brilho</label>
-                            <input type="text" id="testeBrilho" placeholder="Resultado">
+                            <label>
+                                Teste de Brilho (UB)
+                                <span class="spec-range" id="brilhoSpec">Brilhante: >90 | Semi: 40-80 | Fosco: ≤15</span>
+                            </label>
+                            <input type="number" id="testeBrilho" placeholder="0" step="1" inputmode="numeric" onblur="validarEspecificacao(this, 'brilho')">
                         </div>
                         <div class="teste-item">
-                            <label>Teste de Camada</label>
-                            <input type="text" id="testeCamada" placeholder="Resultado">
+                            <label>
+                                Teste de Camada (µm)
+                                <span class="spec-range" id="camadaSpec">Ver especificação</span>
+                            </label>
+                            <input type="number" id="testeCamada" placeholder="0" step="1" inputmode="numeric" onblur="validarEspecificacao(this, 'camada')">
                         </div>
                         <div class="teste-item">
-                            <label>Teste de Impacto</label>
-                            <input type="text" id="testeImpacto" placeholder="Resultado">
+                            <label>
+                                Teste de Impacto
+                                <span class="spec-range">Sem trincas/deslocamentos</span>
+                            </label>
+                            <input type="text" id="testeImpacto" placeholder="OK / NOK">
                         </div>
                         <div class="teste-item">
-                            <label>Teste de Mandril</label>
-                            <input type="text" id="testeMandril" placeholder="Resultado">
+                            <label>
+                                Teste de Mandril
+                                <span class="spec-range">Sem trincas/deslocamentos</span>
+                            </label>
+                            <input type="text" id="testeMandril" placeholder="OK / NOK">
                         </div>
                         <div class="teste-item">
-                            <label>Teste de Grade</label>
-                            <input type="text" id="testeGrade" placeholder="Resultado">
+                            <label>
+                                Teste de Grade
+                                <span class="spec-range">Nenhum desprendimento</span>
+                            </label>
+                            <input type="text" id="testeGrade" placeholder="OK / NOK">
                         </div>
                         <div class="teste-item">
-                            <label>Teste de Peneira</label>
-                            <input type="text" id="testePeneira" placeholder="Resultado">
+                            <label>
+                                Teste de Peneira
+                                <span class="spec-range">Sem resíduos</span>
+                            </label>
+                            <input type="text" id="testePeneira" placeholder="OK / NOK">
                         </div>
                         <div class="teste-item">
-                            <label>Teste de MEK</label>
-                            <input type="text" id="testeMek" placeholder="Resultado">
+                            <label>
+                                Teste de MEK
+                                <span class="spec-range">Resistência ao solvente</span>
+                            </label>
+                            <input type="text" id="testeMek" placeholder="OK / NOK">
                         </div>
                     </div>
+
+                    <div id="alertasEspec" style="display: none; margin-bottom: 20px;"></div>
 
                     <button type="submit" class="btn btn-success" id="btnSalvar">
                         💾 Salvar Análise
@@ -536,6 +681,38 @@
                     🔄 Sincronizar Dados
                 </button>
 
+                <div class="specs-table">
+                    <h3>📋 Especificações de Referência</h3>
+                    <div class="spec-row">
+                        <div class="spec-label">Colorímetro</div>
+                        <div class="spec-value">ΔE ≤ 2,0</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">Brilho Brilhante</div>
+                        <div class="spec-value">acima de 90 UB</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">Brilho Semi-brilho</div>
+                        <div class="spec-value">40-80 UB</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">Brilho Fosco</div>
+                        <div class="spec-value">até 15 UB</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">Camada Liso</div>
+                        <div class="spec-value">60-90 µm</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">Camada Texturizado</div>
+                        <div class="spec-value">80-120 µm</div>
+                    </div>
+                    <div class="spec-row">
+                        <div class="spec-label">Camada Microtexturizado</div>
+                        <div class="spec-value">70-100 µm</div>
+                    </div>
+                </div>
+
                 <div id="historicoContainer">
                     <div class="empty-state">
                         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.3; margin-bottom: 20px;">
@@ -552,28 +729,182 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // URL do Apps Script (seu endpoint)
+        // URL do Apps Script
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHU8PeycjNqJ1asyiiaSqXJtaiDnsGZBQY2k1jit39qWspz_8k3_WX17LALRuVqXNu/exec';
+        
+        // Listas de opções
+        const cores = ['AMARELO', 'AZUL', 'BEJE', 'BRANCO', 'CHAMPANHE', 'CINZA', 'LARANJA', 'MARROM', 'PRETO', 'VERDE', 'VERMELHO'];
+        const superficies = ['LISO', 'MICROTEXTURA', 'TEXTURIZADO'];
+        const brilhos = ['BRILHANTE', 'FOSCO', 'SEMI BRILHO'];
         
         let lotesCache = {};
         let analisesCache = [];
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
+            // Configurar autocomplete
+            setupAutocomplete('cor', cores);
+            setupAutocomplete('superficie', superficies);
+            setupAutocomplete('brilho', brilhos);
+            
+            // Atualizar especificações quando mudar brilho ou superfície
+            document.getElementById('brilho').addEventListener('change', atualizarEspecificacoes);
+            document.getElementById('superficie').addEventListener('change', atualizarEspecificacoes);
+            
+            // Preencher data e hora
             const agora = new Date();
             document.getElementById('data').valueAsDate = agora;
             document.getElementById('hora').value = agora.toTimeString().slice(0, 5);
             
-            // Sincronizar automaticamente ao carregar
             sincronizarDados();
         });
 
-        // Sincronizar dados do servidor
+        // Setup autocomplete
+        function setupAutocomplete(inputId, options) {
+            const input = document.getElementById(inputId);
+            const list = document.getElementById(inputId + 'List');
+            
+            input.addEventListener('input', () => {
+                const value = input.value.toUpperCase();
+                list.innerHTML = '';
+                
+                if (value.length === 0) {
+                    list.style.display = 'none';
+                    return;
+                }
+                
+                const filtered = options.filter(opt => opt.includes(value));
+                
+                if (filtered.length === 0) {
+                    list.style.display = 'none';
+                    return;
+                }
+                
+                filtered.forEach(opt => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.textContent = opt;
+                    div.onclick = () => {
+                        input.value = opt;
+                        list.style.display = 'none';
+                        input.dispatchEvent(new Event('change'));
+                    };
+                    list.appendChild(div);
+                });
+                
+                list.style.display = 'block';
+            });
+            
+            input.addEventListener('blur', () => {
+                setTimeout(() => list.style.display = 'none', 200);
+            });
+            
+            input.addEventListener('focus', () => {
+                if (input.value.length > 0) {
+                    input.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+
+        // Atualizar especificações mostradas
+        function atualizarEspecificacoes() {
+            const brilho = document.getElementById('brilho').value.toUpperCase();
+            const superficie = document.getElementById('superficie').value.toUpperCase();
+            
+            // Atualizar spec de brilho
+            const brilhoSpec = document.getElementById('brilhoSpec');
+            if (brilho === 'BRILHANTE') brilhoSpec.textContent = '> 90 UB';
+            else if (brilho === 'SEMI BRILHO') brilhoSpec.textContent = '40-80 UB';
+            else if (brilho === 'FOSCO') brilhoSpec.textContent = '≤ 15 UB';
+            
+            // Atualizar spec de camada
+            const camadaSpec = document.getElementById('camadaSpec');
+            if (superficie === 'LISO') camadaSpec.textContent = '60-90 µm';
+            else if (superficie === 'TEXTURIZADO') camadaSpec.textContent = '80-120 µm';
+            else if (superficie === 'MICROTEXTURA') camadaSpec.textContent = '70-100 µm';
+        }
+
+        // Validar especificação
+        function validarEspecificacao(input, tipo) {
+            const valor = parseFloat(input.value);
+            if (isNaN(valor)) {
+                input.classList.remove('in-spec', 'out-of-spec');
+                return true;
+            }
+            
+            let dentroSpec = true;
+            let mensagem = '';
+            
+            if (tipo === 'cor') {
+                // ΔE ≤ 2,0
+                dentroSpec = valor <= 2.0;
+                mensagem = dentroSpec ? '✓ Dentro da especificação (≤ 2,0)' : '✗ Fora da especificação (deve ser ≤ 2,0)';
+            } else if (tipo === 'brilho') {
+                const brilho = document.getElementById('brilho').value.toUpperCase();
+                if (brilho === 'BRILHANTE') {
+                    dentroSpec = valor > 90;
+                    mensagem = dentroSpec ? '✓ Brilhante OK (> 90)' : '✗ Brilhante deve ser > 90 UB';
+                } else if (brilho === 'SEMI BRILHO') {
+                    dentroSpec = valor >= 40 && valor <= 80;
+                    mensagem = dentroSpec ? '✓ Semi-brilho OK (40-80)' : '✗ Semi-brilho deve ser 40-80 UB';
+                } else if (brilho === 'FOSCO') {
+                    dentroSpec = valor <= 15;
+                    mensagem = dentroSpec ? '✓ Fosco OK (≤ 15)' : '✗ Fosco deve ser ≤ 15 UB';
+                }
+            } else if (tipo === 'camada') {
+                const superficie = document.getElementById('superficie').value.toUpperCase();
+                if (superficie === 'LISO') {
+                    dentroSpec = valor >= 60 && valor <= 90;
+                    mensagem = dentroSpec ? '✓ Liso OK (60-90 µm)' : '✗ Liso deve ser 60-90 µm';
+                } else if (superficie === 'TEXTURIZADO') {
+                    dentroSpec = valor >= 80 && valor <= 120;
+                    mensagem = dentroSpec ? '✓ Texturizado OK (80-120 µm)' : '✗ Texturizado deve ser 80-120 µm';
+                } else if (superficie === 'MICROTEXTURA') {
+                    dentroSpec = valor >= 70 && valor <= 100;
+                    mensagem = dentroSpec ? '✓ Microtextura OK (70-100 µm)' : '✗ Microtextura deve ser 70-100 µm';
+                }
+            }
+            
+            input.classList.remove('in-spec', 'out-of-spec');
+            input.classList.add(dentroSpec ? 'in-spec' : 'out-of-spec');
+            
+            // Mostrar alerta se fora da especificação
+            mostrarAlertaEspec(tipo, mensagem, dentroSpec);
+            
+            return dentroSpec;
+        }
+
+        // Mostrar alerta de especificação
+        function mostrarAlertaEspec(tipo, mensagem, dentroSpec) {
+            const container = document.getElementById('alertasEspec');
+            let alertaExistente = document.getElementById('alerta-' + tipo);
+            
+            if (!dentroSpec) {
+                if (!alertaExistente) {
+                    alertaExistente = document.createElement('div');
+                    alertaExistente.id = 'alerta-' + tipo;
+                    alertaExistente.className = 'desvio-alerta';
+                    container.appendChild(alertaExistente);
+                }
+                alertaExistente.innerHTML = `<strong>⚠️ ${tipo.toUpperCase()}:</strong> ${mensagem}`;
+                alertaExistente.style.display = 'block';
+                container.style.display = 'block';
+            } else {
+                if (alertaExistente) {
+                    alertaExistente.remove();
+                }
+                // Verificar se ainda há alertas
+                if (container.children.length === 0) {
+                    container.style.display = 'none';
+                }
+            }
+        }
+
+        // Sincronizar dados
         async function sincronizarDados() {
             showToast('🔄 Sincronizando...');
             
             try {
-                // Buscar lotes
                 const responseLotes = await fetch(`${SCRIPT_URL}?action=getLotes`);
                 const dataLotes = await responseLotes.json();
                 
@@ -584,7 +915,6 @@
                     });
                 }
                 
-                // Buscar análises
                 const responseAnalises = await fetch(`${SCRIPT_URL}?action=getAnalises`);
                 const dataAnalises = await responseAnalises.json();
                 
@@ -594,26 +924,21 @@
                 
                 updateConnectionStatus(true);
                 document.getElementById('savedIndicator').style.display = 'inline-flex';
-                showToast(`✅ Sincronizado! ${analisesCache.length} análises carregadas.`);
+                showToast(`✅ Sincronizado! ${analisesCache.length} análises.`);
                 
-                // Atualizar histórico se tiver lote consultado
                 const loteConsulta = document.getElementById('loteConsulta').value.trim();
-                if (loteConsulta) {
-                    carregarHistorico();
-                }
+                if (loteConsulta) carregarHistorico();
                 
             } catch (error) {
                 console.error('Erro:', error);
-                showToast('❌ Erro ao sincronizar: ' + error.message, true);
+                showToast('❌ Erro ao sincronizar', true);
                 updateConnectionStatus(false);
             }
         }
 
-        // Atualizar status
         function updateConnectionStatus(connected) {
             const dot = document.getElementById('statusDot');
             const text = document.getElementById('statusText');
-            
             if (connected) {
                 dot.classList.remove('offline');
                 text.textContent = 'Conectado';
@@ -626,16 +951,12 @@
         // Consultar lote
         async function consultarLote() {
             const lote = document.getElementById('lote').value.trim().toUpperCase();
-            
             if (!lote) {
                 showToast('Digite o número do lote!', true);
                 return;
             }
             
-            // Sincronizar se não tiver dados
-            if (Object.keys(lotesCache).length === 0) {
-                await sincronizarDados();
-            }
+            if (Object.keys(lotesCache).length === 0) await sincronizarDados();
             
             const infoLoteDiv = document.getElementById('infoLote');
             const badge = document.getElementById('tipoAnaliseBadge');
@@ -654,7 +975,10 @@
                 
                 badge.textContent = 'Lote Existente - Dados Carregados';
                 badge.style.background = '#dbeafe';
-                showToast('✅ Lote encontrado! Dados preenchidos automaticamente.');
+                showToast('✅ Lote encontrado! Dados preenchidos.');
+                
+                // Atualizar especificações
+                atualizarEspecificacoes();
             } else {
                 ['cor', 'superficie', 'brilho', 'cartela', 'codigo'].forEach(id => {
                     document.getElementById(id).readOnly = false;
@@ -679,7 +1003,12 @@
             btn.innerHTML = '<span class="loading"></span> Salvando...';
             
             try {
-                // Se for primeira análise, salvar lote primeiro
+                // Validar todos os campos numéricos
+                const corOK = validarEspecificacao(document.getElementById('testeCor'), 'cor');
+                const brilhoOK = validarEspecificacao(document.getElementById('testeBrilho'), 'brilho');
+                const camadaOK = validarEspecificacao(document.getElementById('testeCamada'), 'camada');
+                
+                // Se for primeira análise, salvar lote
                 if (!lotesCache[lote]) {
                     const loteData = {
                         action: 'addLote',
@@ -693,15 +1022,10 @@
                         }
                     };
                     
-                    const responseLote = await fetch(SCRIPT_URL, {
+                    await fetch(SCRIPT_URL, {
                         method: 'POST',
                         body: JSON.stringify(loteData)
                     });
-                    
-                    const resultLote = await responseLote.json();
-                    if (!resultLote.success) {
-                        throw new Error('Erro ao salvar lote: ' + resultLote.error);
-                    }
                 }
                 
                 // Salvar análise
@@ -726,26 +1050,28 @@
                     }
                 };
                 
-                const responseAnalise = await fetch(SCRIPT_URL, {
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify(analiseData)
                 });
                 
-                const resultAnalise = await responseAnalise.json();
+                const result = await response.json();
                 
-                if (resultAnalise.success) {
+                if (result.success) {
                     showToast('✅ Análise salva com sucesso!');
                     
                     // Limpar campos
                     document.getElementById('caixa').value = '';
                     ['testeCor', 'testeBrilho', 'testeCamada', 'testeImpacto', 'testeMandril', 'testeGrade', 'testePeneira', 'testeMek'].forEach(id => {
                         document.getElementById(id).value = '';
+                        document.getElementById(id).classList.remove('in-spec', 'out-of-spec');
                     });
+                    document.getElementById('alertasEspec').innerHTML = '';
+                    document.getElementById('alertasEspec').style.display = 'none';
                     
-                    // Recarregar dados
                     await sincronizarDados();
                 } else {
-                    throw new Error(resultAnalise.error);
+                    throw new Error(result.error);
                 }
                 
             } catch (error) {
@@ -781,14 +1107,24 @@
                 return;
             }
             
-            const desvios = detectarDesvios(analisesLote);
+            // Verificar desvios nas análises
+            const desvios = [];
+            const primeira = analisesLote[analisesLote.length - 1];
+            const ultima = analisesLote[0];
+            
+            // Verificar Colorímetro
+            const corPrim = parseFloat(primeira.testes.cor);
+            const corUlt = parseFloat(ultima.testes.cor);
+            if (!isNaN(corPrim) && !isNaN(corUlt)) {
+                if (corUlt > 2.0) desvios.push(`Colorímetro: ${corUlt} (deve ser ≤ 2,0)`);
+            }
             
             let html = '';
             
             if (desvios.length > 0) {
                 html += `
                     <div class="desvio-alerta">
-                        <h4>⚠️ Desvios Detectados</h4>
+                        <h4>⚠️ Fora da Especificação</h4>
                         ${desvios.map(d => `<div class="desvio-item">• ${d}</div>`).join('')}
                     </div>
                 `;
@@ -813,8 +1149,13 @@
             
             analisesLote.forEach((analise, index) => {
                 const isPrimeira = index === analisesLote.length - 1;
+                
+                // Verificar se está fora da especificação
+                const corVal = parseFloat(analise.testes.cor);
+                const foraSpec = corVal > 2.0;
+                
                 html += `
-                    <div class="historico-item">
+                    <div class="historico-item" style="${foraSpec ? 'border-left-color: var(--danger);' : ''}">
                         <div class="historico-header">
                             <span>Caixa #${analise.caixa} ${isPrimeira ? '(Primeira)' : ''}</span>
                             <span>${formatarData(analise.data)} ${analise.hora}</span>
@@ -823,44 +1164,44 @@
                             Responsável: ${analise.responsavel}
                         </div>
                         <div class="historico-testes">
-                            <div class="teste-result"><div class="label">Cor</div><div class="value">${analise.testes.cor || '-'}</div></div>
-                            <div class="teste-result"><div class="label">Brilho</div><div class="value">${analise.testes.brilho || '-'}</div></div>
-                            <div class="teste-result"><div class="label">Camada</div><div class="value">${analise.testes.camada || '-'}</div></div>
-                            <div class="teste-result"><div class="label">Impacto</div><div class="value">${analise.testes.impacto || '-'}</div></div>
-                            <div class="teste-result"><div class="label">Mandril</div><div class="value">${analise.testes.mandril || '-'}</div></div>
-                            <div class="teste-result"><div class="label">Grade</div><div class="value">${analise.testes.grade || '-'}</div></div>
-                            <div class="teste-result"><div class="label">Peneira</div><div class="value">${analise.testes.peneira || '-'}</div></div>
-                            <div class="teste-result"><div class="label">MEK</div><div class="value">${analise.testes.mek || '-'}</div></div>
+                            <div class="teste-result ${corVal > 2.0 ? 'out-of-spec' : ''}">
+                                <div class="label">Cor</div>
+                                <div class="value">${analise.testes.cor || '-'} ${corVal > 2.0 ? '⚠️' : ''}</div>
+                            </div>
+                            <div class="teste-result">
+                                <div class="label">Brilho</div>
+                                <div class="value">${analise.testes.brilho || '-'}</div>
+                            </div>
+                            <div class="teste-result">
+                                <div class="label">Camada</div>
+                                <div class="value">${analise.testes.camada || '-'}</div>
+                            </div>
+                            <div class="teste-result">
+                                <div class="label">Impacto</div>
+                                <div class="value">${analise.testes.impacto || '-'}</div>
+                            </div>
+                            <div class="teste-result">
+                                <div class="label">Mandril</div>
+                                <div class="value">${analise.testes.mandril || '-'}</div>
+                            </div>
+                            <div class="teste-result">
+                                <div class="label">Grade</div>
+                                <div class="value">${analise.testes.grade || '-'}</div>
+                            </div>
+                            <div class="teste-result">
+                                <div class="label">Peneira</div>
+                                <div class="value">${analise.testes.peneira || '-'}</div>
+                            </div>
+                            <div class="teste-result">
+                                <div class="label">MEK</div>
+                                <div class="value">${analise.testes.mek || '-'}</div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
             
             container.innerHTML = html;
-        }
-
-        // Detectar desvios
-        function detectarDesvios(analises) {
-            const desvios = [];
-            if (analises.length < 2) return desvios;
-            
-            const campos = ['cor', 'brilho', 'camada', 'impacto', 'mandril', 'grade', 'peneira', 'mek'];
-            const ultima = analises[0];
-            const primeira = analises[analises.length - 1];
-            
-            campos.forEach(campo => {
-                const valUltima = parseFloat(ultima.testes[campo]);
-                const valPrimeira = parseFloat(primeira.testes[campo]);
-                
-                if (!isNaN(valUltima) && !isNaN(valPrimeira) && valPrimeira !== 0) {
-                    const variacao = Math.abs(((valUltima - valPrimeira) / valPrimeira) * 100);
-                    if (variacao > 10) {
-                        desvios.push(`${campo.toUpperCase()}: variação de ${variacao.toFixed(1)}%`);
-                    }
-                }
-            });
-            
-            return desvios;
         }
 
         // Limpar formulário
@@ -870,13 +1211,17 @@
             ['cor', 'superficie', 'brilho', 'cartela', 'codigo'].forEach(id => {
                 document.getElementById(id).readOnly = false;
             });
+            ['testeCor', 'testeBrilho', 'testeCamada'].forEach(id => {
+                document.getElementById(id).classList.remove('in-spec', 'out-of-spec');
+            });
+            document.getElementById('alertasEspec').innerHTML = '';
+            document.getElementById('alertasEspec').style.display = 'none';
             
             const agora = new Date();
             document.getElementById('data').valueAsDate = agora;
             document.getElementById('hora').value = agora.toTimeString().slice(0, 5);
         }
 
-        // Utilitários
         function formatarData(dataStr) {
             if (!dataStr) return '-';
             const [ano, mes, dia] = dataStr.split('-');

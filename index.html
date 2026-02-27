@@ -776,6 +776,27 @@
             border-top: 2px solid var(--border);
         }
 
+        .error-box {
+            background: #fef2f2;
+            border: 2px solid var(--danger);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: var(--danger);
+        }
+
+        .error-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .error-box ul {
+            margin-left: 20px;
+        }
+
+        .error-box li {
+            margin-bottom: 5px;
+        }
+
         @media print {
             body * {
                 visibility: hidden;
@@ -997,6 +1018,8 @@
                     🔄 Sincronizar Dados
                 </button>
 
+                <div id="errorContainer"></div>
+
                 <div class="specs-table">
                     <h3>📋 Especificações de Referência</h3>
                     <div class="spec-row">
@@ -1068,8 +1091,8 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // URL do Apps Script
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHU8PeycjNqJ1asyiiaSqXJtaiDnsGZBQY2k1jit39qWspz_8k3_WX17LALRuVqXNu/exec ';
+        // URL do Apps Script - VERIFIQUE SE ESTÁ CORRETA!
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHU8PeycjNqJ1asyiiaSqXJtaiDnsGZBQY2k1jit39qWspz_8k3_WX17LALRuVqXNu/exec';
         
         // Listas de opções
         const cores = ['AMARELO', 'AZUL', 'BEJE', 'BRANCO', 'CHAMPANHE', 'CINZA', 'LARANJA', 'MARROM', 'PRETO', 'VERDE', 'VERMELHO'];
@@ -1096,7 +1119,8 @@
             document.getElementById('data').valueAsDate = agora;
             document.getElementById('hora').value = agora.toTimeString().slice(0, 5);
             
-            sincronizarDados();
+            // Tentar sincronizar automaticamente ao carregar
+            setTimeout(() => sincronizarDados(), 1000);
         });
 
         // Setup autocomplete
@@ -1240,13 +1264,60 @@
             }
         }
 
-        // Sincronizar dados
+        // Função para fazer requisições GET usando JSONP (evita CORS)
+        function fetchJSONP(url) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                
+                script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
+                script.onerror = () => {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(new Error('Erro ao carregar dados'));
+                };
+                
+                document.body.appendChild(script);
+                
+                // Timeout de 10 segundos
+                setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                        reject(new Error('Timeout ao carregar dados'));
+                    }
+                }, 10000);
+            });
+        }
+
+        // Sincronizar dados - usando modo que evita CORS
         async function sincronizarDados() {
             showToast('🔄 Sincronizando...');
+            document.getElementById('errorContainer').innerHTML = '';
             
             try {
-                const responseLotes = await fetch(`${SCRIPT_URL}?action=getLotes`);
-                const dataLotes = await responseLotes.json();
+                // Tentar usar fetch com text/plain primeiro (evita preflight)
+                let responseLotes, dataLotes;
+                
+                try {
+                    responseLotes = await fetch(`${SCRIPT_URL}?action=getLotes`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    dataLotes = await responseLotes.json();
+                } catch (e) {
+                    console.log('Fetch falhou, tentando JSONP...', e);
+                    // Se falhar, usar JSONP
+                    dataLotes = await fetchJSONP(`${SCRIPT_URL}?action=getLotes`);
+                }
                 
                 if (dataLotes.success) {
                     lotesCache = {};
@@ -1255,8 +1326,19 @@
                     });
                 }
                 
-                const responseAnalises = await fetch(`${SCRIPT_URL}?action=getAnalises`);
-                const dataAnalises = await responseAnalises.json();
+                let dataAnalises;
+                try {
+                    const responseAnalises = await fetch(`${SCRIPT_URL}?action=getAnalises`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    dataAnalises = await responseAnalises.json();
+                } catch (e) {
+                    console.log('Fetch falhou, tentando JSONP...', e);
+                    dataAnalises = await fetchJSONP(`${SCRIPT_URL}?action=getAnalises`);
+                }
                 
                 if (dataAnalises.success) {
                     analisesCache = dataAnalises.data;
@@ -1270,9 +1352,26 @@
                 if (loteConsulta) carregarHistorico();
                 
             } catch (error) {
-                console.error('Erro:', error);
-                showToast('❌ Erro ao sincronizar', true);
+                console.error('Erro detalhado:', error);
                 updateConnectionStatus(false);
+                
+                // Mostrar instruções de solução
+                document.getElementById('errorContainer').innerHTML = `
+                    <div class="error-box">
+                        <h3>❌ Erro de Conexão</h3>
+                        <p><strong>Erro:</strong> ${error.message}</p>
+                        <p style="margin-top: 10px;"><strong>Soluções possíveis:</strong></p>
+                        <ul>
+                            <li>Verifique se a URL do Apps Script está correta no código</li>
+                            <li>Verifique se o Apps Script está implantado como "Web App" com acesso "Anyone"</li>
+                            <li>Se estiver testando localmente (arquivo://), o navegador pode bloquear. Use um servidor local ou hospede o HTML</li>
+                            <li>Verifique se a função doGet está implementada no Apps Script</li>
+                            <li>Tente acessar a URL diretamente no navegador para testar</li>
+                        </ul>
+                    </div>
+                `;
+                
+                showToast('❌ Erro ao sincronizar', true);
             }
         }
 
@@ -1333,7 +1432,7 @@
             infoLoteDiv.style.display = 'block';
         }
 
-        // Salvar análise
+        // Salvar análise - usando text/plain para evitar preflight CORS
         document.getElementById('analiseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1362,9 +1461,14 @@
                         }
                     };
                     
+                    // Usar text/plain para evitar preflight CORS
                     await fetch(SCRIPT_URL, {
                         method: 'POST',
-                        body: JSON.stringify(loteData)
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8',
+                        },
+                        body: JSON.stringify(loteData),
+                        redirect: 'follow'
                     });
                 }
                 
@@ -1390,9 +1494,14 @@
                     }
                 };
                 
+                // Usar text/plain para evitar preflight CORS
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify(analiseData)
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify(analiseData),
+                    redirect: 'follow'
                 });
                 
                 const result = await response.json();
@@ -1411,7 +1520,7 @@
                     
                     await sincronizarDados();
                 } else {
-                    throw new Error(result.error);
+                    throw new Error(result.error || 'Erro desconhecido');
                 }
                 
             } catch (error) {

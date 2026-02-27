@@ -228,6 +228,18 @@
             font-size: 0.85rem;
         }
 
+        .btn-certificate {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-certificate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -493,13 +505,317 @@
         .spec-value {
             color: #6b7280;
         }
+
+        /* Estilos para o Modal do Certificado */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        /* Estilos do Certificado para Impressão */
+        .certificado {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .certificado::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid var(--primary-light);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .cert-header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .cert-logo {
+            max-height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .cert-title {
+            font-size: 2rem;
+            color: var(--primary);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .cert-subtitle {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+
+        .cert-section {
+            margin-bottom: 25px;
+        }
+
+        .cert-section-title {
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .cert-item {
+            background: #f9fafb;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-light);
+        }
+
+        .cert-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .cert-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .cert-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .cert-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .cert-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .cert-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cert-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .cert-table .out-of-spec {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .cert-table .in-spec {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .stats-summary {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .stats-summary h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-grid-cert {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stat-box-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-box-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .cert-footer {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 2px solid var(--text);
+            margin-top: 50px;
+            padding-top: 10px;
+            font-weight: 600;
+        }
+
+        .cert-date {
+            text-align: right;
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .print-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .certificado, .certificado * {
+                visibility: visible;
+            }
+            .certificado {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+            }
+            .certificado::before {
+                display: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cert-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid-cert {
+                grid-template-columns: 1fr;
+            }
+            .cert-footer {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="logo-container">
-                <img src="https://i.imgur.com/9Uv6GTe.png" 
+                <img src="https://i.imgur.com/9Uv6GTe.png " 
                      alt="Logo Empresa" 
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <div style="display: none; font-size: 4rem;">🧪</div>
@@ -726,11 +1042,34 @@
         </div>
     </div>
 
+    <!-- Modal do Certificado -->
+    <div class="modal-overlay" id="certificadoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📜 Certificado de Qualidade</h2>
+                <button class="modal-close" onclick="fecharCertificado()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="certificadoContent">
+                    <!-- Conteúdo do certificado será inserido aqui -->
+                </div>
+                <div class="print-actions no-print">
+                    <button class="btn btn-primary" onclick="imprimirCertificado()" style="flex: 1;">
+                        🖨️ Imprimir Certificado
+                    </button>
+                    <button class="btn btn-secondary" onclick="fecharCertificado()" style="flex: 1;">
+                        ✕ Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
         // URL do Apps Script
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHU8PeycjNqJ1asyiiaSqXJtaiDnsGZBQY2k1jit39qWspz_8k3_WX17LALRuVqXNu/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHU8PeycjNqJ1asyiiaSqXJtaiDnsGZBQY2k1jit39qWspz_8k3_WX17LALRuVqXNu/exec ';
         
         // Listas de opções
         const cores = ['AMARELO', 'AZUL', 'BEJE', 'BRANCO', 'CHAMPANHE', 'CINZA', 'LARANJA', 'MARROM', 'PRETO', 'VERDE', 'VERMELHO'];
@@ -739,6 +1078,7 @@
         
         let lotesCache = {};
         let analisesCache = [];
+        let currentLoteData = null;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
@@ -1107,6 +1447,13 @@
                 return;
             }
             
+            // Armazenar dados para o certificado
+            currentLoteData = {
+                lote: lote,
+                info: lotesCache[lote] || {},
+                analises: analisesLote
+            };
+            
             // Verificar desvios nas análises
             const desvios = [];
             const primeira = analisesLote[analisesLote.length - 1];
@@ -1145,6 +1492,13 @@
                         <div class="stat-label">Primeira Caixa</div>
                     </div>
                 </div>
+            `;
+            
+            // Botão de certificado
+            html += `
+                <button type="button" class="btn btn-certificate" onclick="gerarCertificado()" style="margin-bottom: 20px;">
+                    📜 Emitir Certificado de Qualidade
+                </button>
             `;
             
             analisesLote.forEach((analise, index) => {
@@ -1204,6 +1558,239 @@
             container.innerHTML = html;
         }
 
+        // Gerar Certificado de Qualidade
+        function gerarCertificado() {
+            if (!currentLoteData) return;
+            
+            const { lote, info, analises } = currentLoteData;
+            
+            // Calcular estatísticas
+            const stats = calcularEstatisticas(analises);
+            
+            // Verificar conformidade geral
+            const todasConformes = analises.every(a => {
+                const cor = parseFloat(a.testes.cor);
+                return cor <= 2.0;
+            });
+            
+            const statusQualidade = todasConformes ? 
+                '<span style="color: var(--success); font-weight: bold;">✓ APROVADO</span>' : 
+                '<span style="color: var(--danger); font-weight: bold;">✗ REPROVADO</span>';
+            
+            const html = `
+                <div class="certificado">
+                    <div class="cert-header">
+                        <img src="https://i.imgur.com/9Uv6GTe.png" alt="Logo" class="cert-logo" onerror="this.style.display='none'">
+                        <div class="cert-title">Certificado de Qualidade</div>
+                        <div class="cert-subtitle">Controle de Qualidade - Análise de Tintas</div>
+                    </div>
+
+                    <div class="cert-section">
+                        <div class="cert-section-title">
+                            📋 Informações do Produto
+                        </div>
+                        <div class="cert-grid">
+                            <div class="cert-item">
+                                <div class="cert-label">Número do Lote</div>
+                                <div class="cert-value">${lote}</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Código do Produto</div>
+                                <div class="cert-value">${info.codigo || 'N/A'}</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Cor</div>
+                                <div class="cert-value">${info.cor || 'N/A'}</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Cartela</div>
+                                <div class="cert-value">${info.cartela || 'N/A'}</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Superfície</div>
+                                <div class="cert-value">${info.superficie || 'N/A'}</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Brilho</div>
+                                <div class="cert-value">${info.brilho || 'N/A'}</div>
+                            </div>
+                            <div class="cert-item full-width">
+                                <div class="cert-label">Status de Qualidade</div>
+                                <div class="cert-value" style="font-size: 1.3rem;">${statusQualidade}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cert-section">
+                        <div class="cert-section-title">
+                            🧪 Resultados dos Testes por Amostra
+                        </div>
+                        <table class="cert-table">
+                            <thead>
+                                <tr>
+                                    <th>Caixa</th>
+                                    <th>Data/Hora</th>
+                                    <th>Cor (ΔE)</th>
+                                    <th>Brilho (UB)</th>
+                                    <th>Camada (µm)</th>
+                                    <th>Impacto</th>
+                                    <th>Mandril</th>
+                                    <th>Grade</th>
+                                    <th>Peneira</th>
+                                    <th>MEK</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${analises.map(a => {
+                                    const corVal = parseFloat(a.testes.cor);
+                                    const corClass = corVal > 2.0 ? 'out-of-spec' : 'in-spec';
+                                    return `
+                                        <tr>
+                                            <td><strong>#${a.caixa}</strong></td>
+                                            <td>${formatarData(a.data)} ${a.hora}</td>
+                                            <td class="${corClass}">${a.testes.cor || '-'} ${corVal > 2.0 ? '⚠️' : '✓'}</td>
+                                            <td>${a.testes.brilho || '-'}</td>
+                                            <td>${a.testes.camada || '-'}</td>
+                                            <td>${a.testes.impacto || '-'}</td>
+                                            <td>${a.testes.mandril || '-'}</td>
+                                            <td>${a.testes.grade || '-'}</td>
+                                            <td>${a.testes.peneira || '-'}</td>
+                                            <td>${a.testes.mek || '-'}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="stats-summary">
+                        <h4>📊 Estatísticas da Produção (Médias)</h4>
+                        <div class="stats-grid-cert">
+                            <div class="stat-box">
+                                <div class="stat-box-value">${stats.mediaCor.toFixed(2)}</div>
+                                <div class="stat-box-label">Média Cor (ΔE)</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-value">${stats.mediaBrilho.toFixed(1)}</div>
+                                <div class="stat-box-label">Média Brilho (UB)</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-value">${stats.mediaCamada.toFixed(1)}</div>
+                                <div class="stat-box-label">Média Camada (µm)</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-value">${stats.minCor.toFixed(2)}</div>
+                                <div class="stat-box-label">Mín. Cor (ΔE)</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-value">${stats.maxCor.toFixed(2)}</div>
+                                <div class="stat-box-label">Máx. Cor (ΔE)</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-value">${analises.length}</div>
+                                <div class="stat-box-label">Total de Amostras</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cert-section" style="margin-top: 25px;">
+                        <div class="cert-section-title">
+                            📋 Especificações de Referência
+                        </div>
+                        <div class="cert-grid">
+                            <div class="cert-item">
+                                <div class="cert-label">Colorímetro</div>
+                                <div class="cert-value">ΔE ≤ 2,0</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Brilho Brilhante</div>
+                                <div class="cert-value">> 90 UB</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Brilho Semi-brilho</div>
+                                <div class="cert-value">40-80 UB</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Brilho Fosco</div>
+                                <div class="cert-value">≤ 15 UB</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Camada Liso</div>
+                                <div class="cert-value">60-90 µm</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-label">Camada Texturizado</div>
+                                <div class="cert-value">80-120 µm</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cert-footer">
+                        <div class="signature-box">
+                            <div class="signature-line">Responsável Técnico</div>
+                            <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">${analises[0]?.responsavel || 'N/A'}</div>
+                        </div>
+                        <div class="signature-box">
+                            <div class="signature-line">Aprovação Qualidade</div>
+                            <div style="font-size: 0.9rem; color: #6b7280; margin-top: 5px;">Laboratório</div>
+                        </div>
+                    </div>
+
+                    <div class="cert-date">
+                        Certificado emitido em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('certificadoContent').innerHTML = html;
+            document.getElementById('certificadoModal').classList.add('active');
+        }
+
+        // Calcular estatísticas
+        function calcularEstatisticas(analises) {
+            const valores = {
+                cor: [],
+                brilho: [],
+                camada: []
+            };
+            
+            analises.forEach(a => {
+                const cor = parseFloat(a.testes.cor);
+                const brilho = parseFloat(a.testes.brilho);
+                const camada = parseFloat(a.testes.camada);
+                
+                if (!isNaN(cor)) valores.cor.push(cor);
+                if (!isNaN(brilho)) valores.brilho.push(brilho);
+                if (!isNaN(camada)) valores.camada.push(camada);
+            });
+            
+            const calcMedia = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+            const calcMin = arr => arr.length ? Math.min(...arr) : 0;
+            const calcMax = arr => arr.length ? Math.max(...arr) : 0;
+            
+            return {
+                mediaCor: calcMedia(valores.cor),
+                mediaBrilho: calcMedia(valores.brilho),
+                mediaCamada: calcMedia(valores.camada),
+                minCor: calcMin(valores.cor),
+                maxCor: calcMax(valores.cor),
+                minBrilho: calcMin(valores.brilho),
+                maxBrilho: calcMax(valores.brilho),
+                minCamada: calcMin(valores.camada),
+                maxCamada: calcMax(valores.camada)
+            };
+        }
+
+        // Fechar modal do certificado
+        function fecharCertificado() {
+            document.getElementById('certificadoModal').classList.remove('active');
+        }
+
+        // Imprimir certificado
+        function imprimirCertificado() {
+            window.print();
+        }
+
         // Limpar formulário
         function limparFormulario() {
             document.getElementById('analiseForm').reset();
@@ -1234,6 +1821,13 @@
             toast.className = 'toast show' + (isError ? ' error' : '');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
+
+        // Fechar modal ao clicar fora
+        document.getElementById('certificadoModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('certificadoModal')) {
+                fecharCertificado();
+            }
+        });
     </script>
 </body>
 </html>

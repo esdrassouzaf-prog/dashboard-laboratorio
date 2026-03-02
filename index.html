@@ -1542,7 +1542,7 @@
                 return;
             }
             
-            const analisesLote = analisesCache.filter(a => a.lote === lote).sort((a, b) => {
+            const analisesLote = analisesCache.filter(a => String(a.lote).trim().toUpperCase() === lote).sort((a, b) => {
                 return new Date(b.data + 'T' + b.hora) - new Date(a.data + 'T' + a.hora);
             });
             

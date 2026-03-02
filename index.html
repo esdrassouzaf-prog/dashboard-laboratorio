@@ -804,30 +804,35 @@
         padding: 0;
     }
 
+    /* Esconde tudo */
     body * {
         display: none !important;
     }
 
+    /* Mostra apenas o certificado */
     .certificado {
         display: block !important;
-        position: relative;
+        position: absolute;
+        left: 0;
+        top: 0;
         width: 100%;
+        padding: 30px;
         margin: 0;
-        padding: 20px;
         border: none;
         box-shadow: none;
+        background: white;
     }
 
+    /* Mostra o conteúdo interno */
+    .certificado,
     .certificado * {
-        display: revert !important;
+        display: block !important;
     }
 
     .no-print {
         display: none !important;
     }
-
 }
-        }
 
         @media (max-width: 768px) {
             .cert-grid {

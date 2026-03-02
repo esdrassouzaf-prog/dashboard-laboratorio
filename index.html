@@ -798,25 +798,35 @@
         }
 
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .certificado, .certificado * {
-                visibility: visible;
-            }
-            .certificado {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                border: none;
-            }
-            .certificado::before {
-                display: none;
-            }
-            .no-print {
-                display: none !important;
-            }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    body * {
+        display: none !important;
+    }
+
+    .certificado {
+        display: block !important;
+        position: relative;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        border: none;
+        box-shadow: none;
+    }
+
+    .certificado * {
+        display: revert !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+}
         }
 
         @media (max-width: 768px) {
